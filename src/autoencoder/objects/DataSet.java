@@ -1,4 +1,4 @@
-package nnocr.objects;
+package autoencoder.objects;
 
 import java.util.ArrayList;
 

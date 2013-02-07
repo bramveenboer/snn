@@ -1,12 +1,11 @@
-package nnocr.neuralnet;
+package autoencoder.neuralnet;
 
 import java.util.Arrays;
 
-import nnocr.exception.nnocrException;
-import nnocr.geneticalgorithm.GeneticAlgorithm;
-import nnocr.graphics.Drawing;
-import nnocr.objects.DataSet;
-import nnocr.objects.Sample;
+import autoencoder.exception.AutoencoderException;
+import autoencoder.geneticalgorithm.GeneticAlgorithm;
+import autoencoder.objects.DataSet;
+import autoencoder.objects.Sample;
 
 public class NeuralNet implements GeneticAlgorithm{	
 	/* Constants */
@@ -55,9 +54,9 @@ public class NeuralNet implements GeneticAlgorithm{
 	}
 	
 	/* Update */
-	public double[] update(double[] inputs) throws nnocrException {
+	public double[] update(double[] inputs) throws AutoencoderException {
 		if (inputs.length != numberOfInputNodes) {
-			throw new nnocrException("Wrong number of inputs");
+			throw new AutoencoderException("Wrong number of inputs");
 		}
 		// update input activations
 		for (int i = 0; i < numberOfInputNodes; i++) {
@@ -84,9 +83,9 @@ public class NeuralNet implements GeneticAlgorithm{
 	
 	
 	/* Backpropagate */
-	protected double backPropagate(double[] targets, double learningRate, double momentumFactor) throws nnocrException {
+	protected double backPropagate(double[] targets, double learningRate, double momentumFactor) throws AutoencoderException {
 		if (targets.length != this.numberOfOutputNodes) {
-			throw new nnocrException("Wrong number of target values");
+			throw new AutoencoderException("Wrong number of target values");
 		}
 		// calculate errors for output
 		double[] outputDeltas = new double[this.numberOfOutputNodes];
@@ -128,7 +127,7 @@ public class NeuralNet implements GeneticAlgorithm{
 	}
 
 	/* Test method to easily verify if the neural net works correctly for some DataSet */
-	public void test(DataSet samples) throws nnocrException {
+	public void test(DataSet samples) throws AutoencoderException {
 		for(Sample sample : samples) {
 			double[] inputs = sample.getInput();
 			double[] targets = sample.getOutput();
@@ -138,7 +137,7 @@ public class NeuralNet implements GeneticAlgorithm{
 	}
 	
 	/* Train */
-	public void train(DataSet samples, int iterations, double learningRate, double momentumFactor) throws nnocrException {
+	public void train(DataSet samples, int iterations, double learningRate, double momentumFactor) throws AutoencoderException {
 		for (int i = 0; i < iterations; i++) {
 			double error = 0;
 			for (Sample sample : samples) {
@@ -194,9 +193,4 @@ public class NeuralNet implements GeneticAlgorithm{
 	public double getOutputWeight(int input, int hidden){
 		return weightsOutput[input][hidden];
 	}
-	
-	/* Graphics */	
-	public void draw(){
-		Drawing.draw(this);
-	}	
 }

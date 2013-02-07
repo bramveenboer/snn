@@ -1,10 +1,9 @@
-package nnocr.geneticalgorithm;
+package autoencoder.geneticalgorithm;
 
-import nnocr.exception.nnocrException;
-import nnocr.objects.DataSet;
+import autoencoder.exception.AutoencoderException;
+import autoencoder.objects.DataSet;
 
 public interface GeneticAlgorithm {
-	 double[] update(double[] inputs) throws nnocrException;
-	 void train(DataSet samples, int iterations, double learningRate, double momentumFactor) throws nnocrException;
-	 void draw();
+	 double[] update(double[] inputs) throws AutoencoderException;
+	 void train(DataSet samples, int iterations, double learningRate, double momentumFactor) throws AutoencoderException;
 }

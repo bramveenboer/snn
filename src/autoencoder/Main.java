@@ -1,17 +1,15 @@
-package nnocr;
+package autoencoder;
 
 import java.io.PrintStream;
 import java.util.Locale;
 import java.util.Scanner;
 
-import ui.UIHulpMethodes;
-import nnocr.exception.nnocrException;
-import nnocr.geneticalgorithm.GeneticAlgorithm;
-import nnocr.multineuralnet.MultiNeuralNet;
-import nnocr.neuralnet.NeuralNet;
-import nnocr.objects.DataSet;
-import nnocr.objects.Sample;
-import nnocr.util.InputSelector;
+import autoencoder.exception.AutoencoderException;
+import autoencoder.geneticalgorithm.GeneticAlgorithm;
+import autoencoder.neuralnet.NeuralNet;
+import autoencoder.objects.DataSet;
+import autoencoder.objects.Sample;
+import autoencoder.util.InputSelector;
 
 public class Main {
 
@@ -38,7 +36,7 @@ public class Main {
 		out = new PrintStream(System.out);
 	}
 
-	Sample readTrainingObject(Scanner input) throws nnocrException {
+	Sample readTrainingObject(Scanner input) throws AutoencoderException {
 		Sample output = new Sample(numberOfInputNodes, numberOfOutputNodes);
 
 		for(int i = 0; i < numberOfInputNodes; i++) {
@@ -50,7 +48,7 @@ public class Main {
 		return output;
 	}
 
-	DataSet readDataSet(Scanner input) throws nnocrException {
+	DataSet readDataSet(Scanner input) throws AutoencoderException {
 		DataSet output = new DataSet();
 		while (input.hasNext()) {
 			Scanner trainingObjectScanner = new Scanner(input.nextLine());
@@ -73,7 +71,7 @@ public class Main {
 		return maxIndex;
 	}
 
-	void classify(DataSet dataSet, GeneticAlgorithm ga) throws nnocrException {
+	void classify(DataSet dataSet, GeneticAlgorithm ga) throws AutoencoderException {
 		for (Sample sample : dataSet) {
 			double[] inputs = sample.getInput();
 			double[] targets = sample.getOutput();
@@ -84,7 +82,7 @@ public class Main {
 		}
 	}
 
-	double errorRate(DataSet dataSet, GeneticAlgorithm ga) throws nnocrException {
+	double errorRate(DataSet dataSet, GeneticAlgorithm ga) throws AutoencoderException {
 		int correct = 0;
 		for (Sample sample : dataSet) {
 			double[] inputs = sample.getInput();
@@ -96,75 +94,40 @@ public class Main {
 		return (1 - (correct/(double)dataSet.size())) * 100;
 	}
 
-	void setup() throws nnocrException {
-		String classifierType;
-		try {
-			numberOfInputNodes = Integer.parseInt(UIHulpMethodes.vraagGebruikerOmString("Specify the number of Input Nodes:"));
-			numberOfHiddenNodes = Integer.parseInt(UIHulpMethodes.vraagGebruikerOmString("Specify the number of Hidden Nodes:"));
-			numberOfOutputNodes = Integer.parseInt(UIHulpMethodes.vraagGebruikerOmString("Specify the number of Output Nodes:"));
-			classifierType = UIHulpMethodes.vraagGebruikerOmKeuze("What type of classifier should be used?", "Neural Net", "Multi Neural Net");
-		} catch (Exception e) {
-			throw new nnocrException("Cancel is not allowed here");
-		}
-		if (classifierType.equals("Neural Net")) {
-			ga = new NeuralNet(numberOfInputNodes, numberOfHiddenNodes, numberOfOutputNodes);
-		} else if (classifierType.equals("Multi Neural Net")) {
-			ga = new MultiNeuralNet(numberOfInputNodes, numberOfHiddenNodes, numberOfOutputNodes);
-		} else {
-			throw new nnocrException("Invalid option");
-		}
+	void setup() throws AutoencoderException {
+		numberOfInputNodes = 10;
+		numberOfHiddenNodes = 4;
+		numberOfOutputNodes = 10;
+		ga = new NeuralNet(numberOfInputNodes, numberOfHiddenNodes, numberOfOutputNodes);
 		initialized = true;
 	}
 
-	void train() throws nnocrException {
+	void train() throws AutoencoderException {
 		if (!initialized) {
-			throw new nnocrException("Can not train uninitialized network");
+			throw new AutoencoderException("Can not train uninitialized network");
 		}
-		iterations = Integer.parseInt(UIHulpMethodes.vraagGebruikerOmString("Specify the number of iterations:"));
-		learningRate = Double.parseDouble(UIHulpMethodes.vraagGebruikerOmString("Specify the learning rate to be used:"));
-		momentumFactor = Double.parseDouble(UIHulpMethodes.vraagGebruikerOmString("Specify the momentum factor to be used:"));
+		iterations = 100;
+		learningRate = 0.5;
+		momentumFactor = 0;
 		DataSet trainingSet = readDataSet(InputSelector.getInput());
 		ga.train(trainingSet, iterations, learningRate, momentumFactor);
 	}
 
-	void classify() throws nnocrException {
+	void classify() throws AutoencoderException {
 		if (!initialized) {
-			throw new nnocrException("Can not classify with uninitialized network");
+			throw new AutoencoderException("Can not classify with uninitialized network");
 		}
 		DataSet testSet = readDataSet(InputSelector.getInput());
 		classify(testSet, ga);
 	}
 
-	void visualize() throws nnocrException {
-		if (!initialized) {
-			throw new nnocrException("Can not visualize uninitialized network");
-		}
-		ga.draw();
-	}
-
-	void action() throws nnocrException {
-		String typeAction = UIHulpMethodes.vraagGebruikerOmKeuze("What do you want to do?", "Setup", "Train", "Classify", "Visualize");
-		if (typeAction.equals("Setup")) {
-			setup();
-		} else if (typeAction.equals("Train")) {
-			train();
-		} else if (typeAction.equals("Classify")) {
-			classify();
-		} else if (typeAction.equals("Visualize")) {
-			visualize();
-		} else {
-			run = false;
-		}
-	}
-
 	void start() {
-		while (run) {
-			try{
-				action();
-				run = UIHulpMethodes.vraagGebruikerWelOfNiet("Do you want to do something else?");
-			} catch (nnocrException e) {
-				out.printf("%s\n", e.getMessage());
-			}
+		try {
+			setup();
+			train();
+			classify();
+		} catch (AutoencoderException e) {
+			e.printStackTrace();
 		}
 	}
 

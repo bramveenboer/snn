@@ -1,6 +1,6 @@
-package nnocr.objects;
+package autoencoder.objects;
 
-import nnocr.exception.nnocrException;
+import autoencoder.exception.AutoencoderException;
 
 public class Sample {
 	
@@ -24,19 +24,19 @@ public class Sample {
 		return output.clone();
 	}
 	
-	public void setInputValue(int index, double value) throws nnocrException {
+	public void setInputValue(int index, double value) throws AutoencoderException {
 		if (0 > index || index < numberOfInputNodes) {
 			input[index] = value;
 		} else {
-			throw new nnocrException("Can not set input value, index out of bounds");
+			throw new AutoencoderException("Can not set input value, index out of bounds");
 		}
 	}
 	
-	public void setOutputValue(int index, double value) throws nnocrException {
+	public void setOutputValue(int index, double value) throws AutoencoderException {
 		if (0 > index || index < numberOfOutputNodes) {
 			output[index] = value;
 		} else {
-			throw new nnocrException("Can not set output value, index out of bounds");
+			throw new AutoencoderException("Can not set output value, index out of bounds");
 		}
 	}
 
