@@ -6,14 +6,14 @@ public class Sample {
 	
 	protected double[] input,
 					   output;
-	protected int numberOfInputNodes,
-	              numberOfOutputNodes;
+	protected int nInput,
+	              nOutput;
 	
 	public Sample(int numberOfInputNodes, int numberOfOutputNodes) {
 		this.input = new double[numberOfInputNodes];
 		this.output = new double[numberOfOutputNodes];
-		this.numberOfInputNodes = numberOfInputNodes;
-		this.numberOfOutputNodes = numberOfOutputNodes;
+		this.nInput = numberOfInputNodes;
+		this.nOutput = numberOfOutputNodes;
 	}
 	
 	public double[] getInput() {
@@ -24,19 +24,35 @@ public class Sample {
 		return output.clone();
 	}
 	
+	public void setInput(double[] values) throws AutoencoderException {
+		if (values.length == nInput) {
+			input = values;
+		} else {
+			throw new AutoencoderException("Invalid argument length");
+		}
+	}
+	
+	public void setOutput(double[] values) throws AutoencoderException {
+		if (values.length == nInput) {
+			output = values;
+		} else {
+			throw new AutoencoderException("Invalid argument length");
+		}
+	}
+	
 	public void setInputValue(int index, double value) throws AutoencoderException {
-		if (0 > index || index < numberOfInputNodes) {
+		if (0 > index || index < nInput) {
 			input[index] = value;
 		} else {
-			throw new AutoencoderException("Can not set input value, index out of bounds");
+			throw new AutoencoderException("Index out of bounds");
 		}
 	}
 	
 	public void setOutputValue(int index, double value) throws AutoencoderException {
-		if (0 > index || index < numberOfOutputNodes) {
+		if (0 > index || index < nOutput) {
 			output[index] = value;
 		} else {
-			throw new AutoencoderException("Can not set output value, index out of bounds");
+			throw new AutoencoderException("Index out of bounds");
 		}
 	}
 
@@ -45,8 +61,8 @@ public class Sample {
 	 * less calculations are needed to train or update the network, but
 	 * precision might be compromised */
 	public void downSample(int rate) {
-		double[] input = new double[this.numberOfInputNodes / rate];
-		for (int i = 0; i < this.numberOfInputNodes; i += rate) {
+		double[] input = new double[this.nInput / rate];
+		for (int i = 0; i < this.nInput; i += rate) {
 			double value = 0;
 			for (int j = 0; j < rate; j++) {
 				value += input[i+j] / rate;
@@ -54,6 +70,6 @@ public class Sample {
 			input[i / rate] = value;
 		}
 		this.input = input;
-		this.numberOfInputNodes /= rate;
+		this.nInput /= rate;
 	}
 }
